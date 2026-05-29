@@ -1,188 +1,20 @@
 Package: wayback
-Version: 0.1.8-1
+Version: 0.1.9-1
 Architecture: amd64
 Maintainer: Alexander Salas Bastidas <ajsb85@firechip.dev>
-Installed-Size: 2260
-Filename: ./wayback_0.1.8-1_amd64.deb
-Size: 855804
-MD5sum: 111d1846ae3ac5406ec6dcb0eb3c2b5f
-SHA1: 6024712727b310794fc34d89eb0872751e6753e2
-SHA256: c46301ca33ce48dce7eeb9c44c90883078ae4debe548efa8b1861398c6f5d7aa
+Installed-Size: 2279
+Filename: ./wayback_0.1.9-1_amd64.deb
+Size: 858888
+MD5sum: 56f8649f739a1ec410bea6db9d14b23b
+SHA1: dc08ca9c5eb691f35414c96c107cd926912cc1ec
+SHA256: aac8a1945981b78b383522f0aaa15eeb25e65cc8fd5aa939e2bac2b026ef6b98
+Section: net
 Priority: optional
-Description: [generated from Rust crate wayback-impersonator]
- # Wayback Impersonator
- .
- `wayback-impersonator` is a robust, concurrent command-line utility built in
- Rust that retrieves archived assets from the Internet Archive's Wayback Machine
- CDX API. It utilizes `impersonate-rs` to mimic the TLS/JA3 handshakes and
- HTTP/2 settings of modern browsers (Chrome, Firefox, Safari, Edge, Tor) to
- bypass anti-bot protections.
- .
- ## Features
- .
- - **Browser Impersonation**: Uses FFI wrapper `impersonate-rs` around
- `libcurl-impersonate` to forge browser fingerprints (handshakes, headers, and
- HTTP/2 configurations).
- - **Atomic Progress Journaling**: Saves download progress in a structured JSON
- journal file (`download_journal.json`). Progress is written atomically to
- prevent file corruption.
- - **Resumable Downloads**: Can be interrupted and resumed using the `--resume`
- flag, only retrying files that are pending or failed.
- - **Error-Specific Retries**: Allows targeted retries based on recorded failure
- error messages (e.g. retrying only `429` rate-limit errors or timeouts).
- - **Concurrency**: Fast downloads utilizing a configurable multithreaded worker
- pool.
- - **Decompression Handling**: Automatically inspects headers and magic bytes to
- decompress Gzip (`1f 8b`) and Brotli encoded files transparently.
- - **Filename Sanitization**: Cleans up path names and query strings to keep
- clean extensions (e.g., `.woff2`, `.svg`, `.wasm`).
- .
- ## Installation
- .
- ### Prerequisite: Installing `libcurl-impersonate`
- .
- `wayback` utilizes the `impersonate-rs` crate, which links dynamically to
- `libcurl-impersonate-chrome`. Because this FFI library is not a default package
- in the official Ubuntu/Debian repositories, it is not listed as a strict APT
- package dependency (this prevents installation failures during `apt install`).
- .
- You **must** install `libcurl-impersonate` on your system for `wayback` to run.
- .
- #### Quick Install (Pre-compiled Binaries)
- .
- Run these commands to download and install the Chrome impersonation shared
- libraries to your dynamic linker path:
- .
- ```bash
- # 1. Install standard TLS/NSS dependencies
- sudo apt-get update && sudo apt-get install -y libnss3 nss-plugin-pem
- ca-certificates wget
- .
- # 2. Download libcurl-impersonate (v0.6.1)
- wget
- https://github.com/lwthiker/curl-impersonate/releases/download/v0.6.1/libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
- tar -xvf libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
- .
- # 3. Move libraries to your system linker path and reload cache
- sudo mv libcurl-impersonate-chrome.so* /usr/local/lib/
- sudo mv libcurl-impersonate-ff.so* /usr/local/lib/
- sudo ldconfig
- .
- # 4. Clean up archive
- rm -f libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
- ```
- .
- Verify that it is correctly installed and discoverable:
- ```bash
- ldconfig -p | grep impersonate
- ```
- *(You should see entries for `libcurl-impersonate-chrome.so` and
- `libcurl-impersonate.so`)*
- .
- ---
- .
- ### Debian / Ubuntu (System-wide APT Repository)
- .
- Once the prerequisite `libcurl-impersonate` is installed, you can configure
- `apt` to trust our repository and install `wayback` system-wide:
- .
- 1. **Download and trust the repository GPG key**:
-    ```bash
-    sudo wget -O /usr/share/keyrings/wayback-keyring.gpg
- https://ajsb85.github.io/wayback-impersonator/amd64/archive-key.gpg
-    ```
-    *(Alternatively, you can retrieve the ASCII-armored public key at
- `https://ajsb85.github.io/wayback-impersonator/amd64/archive-key.asc`)*
- .
- 2. **Add the repository to your APT sources**:
-    ```bash
-    # Add the flat repository source
-    echo "deb [signed-by=/usr/share/keyrings/wayback-keyring.gpg]
- https://ajsb85.github.io/wayback-impersonator/amd64/ ./" | sudo tee
- /etc/apt/sources.list.d/wayback.list
-    ```
- .
- 3. **Update indexes and install**:
-    ```bash
-    sudo apt update
-    sudo apt install wayback
-    ```
- .
- This installs the executable system-wide as `wayback` at `/usr/bin/wayback`.
- .
- ### Manual Compilation from Source
- .
- ```bash
- # Verify it's discoverable
- ldconfig -p | grep impersonate
- ```
- .
- #### Build
- .
- ```bash
- cargo build --release
- ```
- .
- The compiled binary will be available at
- `./target/release/wayback-impersonator`.
- .
- ## Usage
- .
- ### Options
- .
- ```text
- Robust browser-impersonated scraper using impersonate-rs
- .
- Usage: wayback-impersonator [OPTIONS] --url <URL> --mime <MIME>
- .
- Options:
-   -u, --url <URL>                    The target domain (e.g. wokwi.com) or a
- direct CDX search URL
-   -m, --mime <MIME>                  The target mime type to filter on CDX API
- (e.g., application/wasm, image/png, text/css)
-   -o, --output-dir <OUTPUT_DIR>      Output folder where downloaded assets and
- the journal will be stored [default: downloads]
-   -b, --browser <BROWSER>            Browser profile to impersonate (chrome,
- firefox, edge, safari, tor) [default: chrome]
-   -r, --resume                       Resume the download from
- download_journal.json in the output directory
-       --retry-errors <RETRY_ERRORS>  Retry only downloads that failed with a
- specific substring in their error message (use "all" for all errors)
-   -t, --threads <THREADS>            Number of concurrent downloader threads
- [default: 4]
-       --max-retries <MAX_RETRIES>    Max retry attempts per download [default:
- 5]
-   -v, --verbose                      Verbose output logging
-   -h, --help                         Print help
- ```
- .
- ### Examples
- .
- #### 1. Download unique WebAssembly files
- ```bash
- wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
- --browser chrome124 --threads 8
- ```
- .
- #### 2. Resume a download session
- ```bash
- wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
- --resume
- ```
- .
- #### 3. Retry only rate-limited (HTTP 429) errors
- ```bash
- wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
- --resume --retry-errors "429"
- ```
- .
- ## Contributing
- .
- Please review the [Contribution Guidelines](CONTRIBUTING.md) for details on our
- development workflow, Trunk-Based Development, and Conventional Commits format.
- .
- ## License
- .
- This project is licensed under the MIT License. See [LICENSE](LICENSE) for
- details.
+Homepage: https://ajsb85.github.io/wayback-impersonator/
+Description: A concurrent, browser-impersonating scraper in Rust to download archived assets
+ from the Internet Archive's Wayback Machine CDX API without being blocked.
+ wayback is a concurrent, browser-impersonating scraper written in Rust that
+ downloads archived assets from the Internet Archive's Wayback Machine CDX API
+ without being blocked. It uses libcurl-impersonate to mimic real browser TLS
+ fingerprints and HTTP headers, allowing it to bypass bot-detection mechanisms.
 

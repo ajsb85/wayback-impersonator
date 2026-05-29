@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Fri, 29 May 2026 05:55:59 +0000
+Date: Fri, 29 May 2026 06:04:33 +0000
 Description: Debian Repository for wayback (amd64)
 Label: wayback
 Origin: ajsb85
 Suite: stable
 MD5Sum:
- 8958178211741790e11f438ce64d07ab             6619 Packages
- e0a1ac28762c371087ee25e1b12f26c1             2932 Packages.gz
- 02472d486248e8a18a2cf54a4eab9b9e              188 Release
+ 255b909703f2efce7f8b37f7ed8b1d51              919 Packages
+ cb72c5edce6da2ad167a516c5a85afef              563 Packages.gz
+ 3a3400214b5cbf8a30eb6bb8a7ba47f7              188 Release
 SHA1:
- ea17adde67229b7b0a596198fc6550aa00cc404b             6619 Packages
- 240bd8d1f8fc5fb796b83e57f1b43fb21065f817             2932 Packages.gz
- cd433f58be5f97b77e2dc42833fd851d2347b473              188 Release
+ 3f803aa6a5c6473c331b1f553795b95f51aa6995              919 Packages
+ e63c73fa0312ec75773a78bbb54e44fd0c523bdc              563 Packages.gz
+ 9d54592c343b0d5e4b89fdce5790bbefc7e1fd3f              188 Release
 SHA256:
- bebe473bcf9b806f2d6057c2af0fab6a6bd24173cfbbf3e7aa87da8c57f545a3             6619 Packages
- 8670ef0a9ade573647b82538d092dff36970ddb90da3b113c0c61ab181b36b88             2932 Packages.gz
- 9d332b6e39919d06444fc3eddec19644a445109ca3a07a97580e0d8559ce16f4              188 Release
+ d5c6d9ccf531cd99dc921dcc20bc508c9fd89f5bb7f4e969b2d87cfa08a41c7f              919 Packages
+ 12628e2ebc0b6e0e347739a33279c4b0953b8b78fda9fa8c4b171d7549c77aa0              563 Packages.gz
+ 5458188c1dc3b2af1763f920d06d535cc1ef7246ff0438bc82a5bdaf93e24080              188 Release
 SHA512:
- 88ac779d699493dbab4805a6c83b1d587cb2fd61ce6433dbff8fada20dc2468e8259fb30fb7ad772959f65f6cb96693c84da2181862b78bce604c8a9dd81763b             6619 Packages
- c92a012a344f152a2289953a3bd88fa451af247ff9467a4c6acab155ad2a57bf09364b708f1f24e0b9ca06526974eb6a5a8674b14c7c9879cf7eb09e6db4c2ba             2932 Packages.gz
- f6c9e964cb37691a10bfbfbf8a2bdc119de7075bcf90feeef573204b3d414ccfe57efa9d76f4a01d0cfc9be2649868facc0a1b84d2187d991c6793d3d1026b98              188 Release
+ 543008d5a8dd6b9c6d67cec6e1fc71fa31f67bb1c4e7a6b3aaa54ff062ebd131848f962666512602bda62d954ddaa305c959de1a6bf7d2def4aa0e02e671bf6c              919 Packages
+ 5007a91cc4177f6ae6e8029f3491f2398b8fd985c3e1a69e87860c3389c028e6664009f547f9374b4c95a7780675b3fe37cad50eae538ba2dd79a5ef9076d2f8              563 Packages.gz
+ 4d6cfe47f613f742299404eadd4b2f622d514f3f37297f717a1e8ae8e4fa8d8d7ac7128b44485ffe410658ad1639166ea74636ec2eeeb8f148ed52fcb64f3ef0              188 Release
