@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Fri, 29 May 2026 05:06:09 +0000
-Description: Debian Repository for wayback-impersonator
-Label: wayback-impersonator
+Date: Fri, 29 May 2026 05:13:40 +0000
+Description: Debian Repository for wayback
+Label: wayback
 Origin: ajsb85
 Suite: stable
 MD5Sum:
- 9c0f26678366d27fc54555732ac1541a              206 Release
- 9a523f856fbe6dc4e0dbd85bf2469fdb             4333 amd64/Packages
- a018936ab37341ec5bda0c7fa8d47467             2073 amd64/Packages.gz
+ a3539483569ee356c497a315805605e6              180 Release
+ a3e395861fd5c901967187927b365f12             5431 amd64/Packages
+ b914aadc6a5aa4ab94303a89c9ba74c2             2496 amd64/Packages.gz
 SHA1:
- c8df25742dc9fca63842df3427795fab01abc8fa              206 Release
- a441a97f43b7d05cb7932a0be691bad1ef980bb9             4333 amd64/Packages
- 1e245facb108b5c6f585a524744aa8930efbefb7             2073 amd64/Packages.gz
+ 6872b94c70edcf2ca60abb61c2d6a49cb07ca0fe              180 Release
+ 15e09a20da9ed9984c7afd1dd100fd972f281a4c             5431 amd64/Packages
+ b675c740e0f74d6a37109973d1099e650310b2a3             2496 amd64/Packages.gz
 SHA256:
- 4521712d8b77c52c96b532f192fbd5d4ad1532f0b53df01a701b89f3a4ab0924              206 Release
- 5bd7bb83ffc7e86ee764b98d6f111d9382904384f34d2003a0fe238732ea0a04             4333 amd64/Packages
- 7074385ee558cd7a6fae9b54778e5fcc92b68238e374c47ea66fbe3a1534d4a0             2073 amd64/Packages.gz
+ 24f7606d02c208a2351466f57af2d7e3ea26890df1f17b7b644595930a3e29a6              180 Release
+ d9a2534862cf0c34879469e744d012b1ee1739ffb1b350191083f3021a9cf3be             5431 amd64/Packages
+ 1c1f73b8157afd6ba18abfe8e3cd8880e28bfc97e4f817403f43c206a2f3fdf7             2496 amd64/Packages.gz
 SHA512:
- dcbc3c915145306d754cd71453ad6af5edcbd3073bb3afd426c3684168de6ae778280d07f88a29fdbfb8e2246f95fda962c4b21008a011ac3cbbdd459601e9c8              206 Release
- 9bef74e020b53312e51e97bf0606654ba46c2a87b320acae6f26e901da97638e7d8cc78df1d157e6940f2d4a13e336d58865f965abc6161e9ff066f1205700f8             4333 amd64/Packages
- a3d934b13814a72f9296ba3eb154c4dba43b5704eb261b8d0ad1067e6626aeea27a3d6ed14d8e8c047353b896dec4d6d67f09e2b23aebe43e4ed8fc84abb85ce             2073 amd64/Packages.gz
+ a4228b62365d38e283d0da6719e2517b689bf896d2adbaf261b00d239a4ba50bba54fbb29699b386fc41f79b27bb47d5be9a7c9ea0d8f1654fde79f95fc35dda              180 Release
+ 8d0e63a73074f065697bf88f107f987eb614bf1f7ec5a59d9e3292a9ee2fe76669281c6b8840dba09f6008f81eb00fb2f0d295ab051cb1b6691b5c66b6119019             5431 amd64/Packages
+ c154793017670c4d47d1a3b36e369dbf9b2d8cd2ed5b08bc14a090c03a4e02739efafa37abc14ef1f23cd818b95f49d64b18bc05df79ee98f7c258858ac9640f             2496 amd64/Packages.gz

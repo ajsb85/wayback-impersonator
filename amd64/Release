@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Fri, 29 May 2026 05:06:10 +0000
-Description: Debian Repository for wayback-impersonator (amd64)
-Label: wayback-impersonator
+Date: Fri, 29 May 2026 05:13:42 +0000
+Description: Debian Repository for wayback (amd64)
+Label: wayback
 Origin: ajsb85
 Suite: stable
 MD5Sum:
- 9a523f856fbe6dc4e0dbd85bf2469fdb             4333 Packages
- a018936ab37341ec5bda0c7fa8d47467             2073 Packages.gz
- 4e6b97f6f8b8d65b3de777929719c19a              214 Release
+ a3e395861fd5c901967187927b365f12             5431 Packages
+ b914aadc6a5aa4ab94303a89c9ba74c2             2496 Packages.gz
+ 84a506c9743ec1dd74d4141a53f0ebd4              188 Release
 SHA1:
- a441a97f43b7d05cb7932a0be691bad1ef980bb9             4333 Packages
- 1e245facb108b5c6f585a524744aa8930efbefb7             2073 Packages.gz
- 10a83999f46ac8d90be88c6d2544b5fbd337ff5c              214 Release
+ 15e09a20da9ed9984c7afd1dd100fd972f281a4c             5431 Packages
+ b675c740e0f74d6a37109973d1099e650310b2a3             2496 Packages.gz
+ 8fc063e7d20c2db173cef32cd1490ab37ebf2371              188 Release
 SHA256:
- 5bd7bb83ffc7e86ee764b98d6f111d9382904384f34d2003a0fe238732ea0a04             4333 Packages
- 7074385ee558cd7a6fae9b54778e5fcc92b68238e374c47ea66fbe3a1534d4a0             2073 Packages.gz
- f041f0f4f497fb31ca814becaea745051e4b39de00a5fd9c2dea794813f93fca              214 Release
+ d9a2534862cf0c34879469e744d012b1ee1739ffb1b350191083f3021a9cf3be             5431 Packages
+ 1c1f73b8157afd6ba18abfe8e3cd8880e28bfc97e4f817403f43c206a2f3fdf7             2496 Packages.gz
+ a4a2d5b18b839e377f4a8cc90c1845f00fafe94a4c947164e4d2b8a8d872b16b              188 Release
 SHA512:
- 9bef74e020b53312e51e97bf0606654ba46c2a87b320acae6f26e901da97638e7d8cc78df1d157e6940f2d4a13e336d58865f965abc6161e9ff066f1205700f8             4333 Packages
- a3d934b13814a72f9296ba3eb154c4dba43b5704eb261b8d0ad1067e6626aeea27a3d6ed14d8e8c047353b896dec4d6d67f09e2b23aebe43e4ed8fc84abb85ce             2073 Packages.gz
- 0974006e5d89899b3482761f763a7010e54702bd5856a98a6fcc46b839c2b379c58c53d4f5220c1e4d9915df046ac6e133a47c3448b12becfcaa1de73c3ba0a2              214 Release
+ 8d0e63a73074f065697bf88f107f987eb614bf1f7ec5a59d9e3292a9ee2fe76669281c6b8840dba09f6008f81eb00fb2f0d295ab051cb1b6691b5c66b6119019             5431 Packages
+ c154793017670c4d47d1a3b36e369dbf9b2d8cd2ed5b08bc14a090c03a4e02739efafa37abc14ef1f23cd818b95f49d64b18bc05df79ee98f7c258858ac9640f             2496 Packages.gz
+ ec0b1a338dd3303a7af34712a340e3413ff7084a82e2c02e452d84ef16e9214c435381ee68b1b75263fa04e38f9bd9017c257269c4d3ef90e9090b375046cfe2              188 Release
