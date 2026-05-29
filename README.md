@@ -27,9 +27,8 @@ Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub Pag
 2. **Add the repository to your APT sources**:
    ```bash
    # Add the flat repository source
-   echo "deb [signed-by=/usr/share/keyrings/wayback-impersonator-keyring.gpg] https://ajsb85.github.io/wayback-impersonator/ ./" | sudo tee /etc/apt/sources.list.d/wayback-impersonator.list
+   echo "deb [signed-by=/usr/share/keyrings/wayback-impersonator-keyring.gpg] https://ajsb85.github.io/wayback-impersonator/amd64/ ./" | sudo tee /etc/apt/sources.list.d/wayback-impersonator.list
    ```
-   *(Alternatively, if your system configuration requires the subfolder syntax, you can use `https://ajsb85.github.io/wayback-impersonator/ amd64/` as the source)*
 
 3. **Update indexes and install**:
    ```bash
