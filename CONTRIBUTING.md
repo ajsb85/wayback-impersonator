@@ -53,7 +53,50 @@ Format:
 3. **Make your changes**:
    - Write clean Rust code.
    - Verify it compiles: `cargo build`
-   - Run tests if any: `cargo test`
-4. **Commit with Conventional Commits format**:
-   - Make sure your commits are signed with your GPG key.
-5. **Merge to main** via Pull Request.
+   - Run tests: `cargo test` (if applicable)
+4. **Commit using Conventional Commit messages**:
+   - Make sure your commits are GPG-signed.
+5. **Push your branch and merge to `main`** via Pull Request.
+
+## GPG Commit and Tag Signing
+
+To ensure codebase integrity, both commits and release tags must be signed using GPG.
+
+### 1. Configure Local Git Signing
+Configure Git with your signing key:
+```bash
+git config --local user.name "Alexander Salas Bastidas"
+git config --local user.email "ajsb85@firechip.dev"
+git config --local user.signingkey "YOUR_KEY_ID"
+git config --local commit.gpgsign true
+```
+
+### 2. Sign Tag Releases
+When releasing a new version, tag the commit using a signed tag:
+```bash
+git tag -s v0.1.1 -m "Release v0.1.1"
+```
+
+If you need to enter the GPG passphrase headlessly or programmatically during git commands, you can configure a helper script:
+```bash
+# Example gpg_sign.sh script
+#!/bin/bash
+gpg --pinentry-mode loopback --passphrase "YOUR_PASSPHRASE" "$@"
+```
+Then configure Git to use it:
+```bash
+git config --local gpg.program "/path/to/gpg_sign.sh"
+```
+*(Ensure to delete or secure the script after operations so passphrase is not exposed)*
+
+## CI/CD and Release Automation
+
+We use GitHub Actions to automate the build, Debian packaging, GPG signing, and hosting pipeline:
+
+1. **Trigger**: Pushing a version tag matching `v*` (e.g., `v0.1.1`) to GitHub triggers the release workflow `.github/workflows/deploy.yml`.
+2. **Dependencies & Build**: The runner installs `libcurl-impersonate` build dependencies, compiles the binary in `--release` mode, and runs `cargo deb` to generate the `.deb` package.
+3. **APT Repository Generation**: The workflow prepares the package metadata files for two flat repository formats:
+   - Root-level (`/` base directory)
+   - Subdirectory-level (`/amd64/` subdirectory)
+4. **Signing**: The workflow imports the release GPG private key from repository secrets and signs the repository index files (`Release` -> `InRelease` and `Release.gpg`) using GPG.
+5. **Hosting**: The generated APT repository structure (including packages, metadata, and GPG public keys `archive-key.gpg`/`archive-key.asc`) is deployed to the `gh-pages` branch, making it live on GitHub Pages.

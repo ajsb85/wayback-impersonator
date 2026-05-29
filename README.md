@@ -14,16 +14,43 @@
 
 ## Installation
 
-### Prerequisites
+### Debian / Ubuntu (System-wide APT Repository)
 
-You must have `libcurl-impersonate` installed on your system.
+Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub Pages. You can configure `apt` to trust the repository and install `wayback-impersonator` system-wide:
+
+1. **Download and trust the repository GPG key**:
+   ```bash
+   sudo wget -O /usr/share/keyrings/wayback-impersonator-keyring.gpg https://ajsb85.github.io/wayback-impersonator/archive-key.gpg
+   ```
+   *(Alternatively, you can retrieve the ASCII-armored public key at `https://ajsb85.github.io/wayback-impersonator/archive-key.asc`)*
+
+2. **Add the repository to your APT sources**:
+   ```bash
+   # Add the flat repository source
+   echo "deb [signed-by=/usr/share/keyrings/wayback-impersonator-keyring.gpg] https://ajsb85.github.io/wayback-impersonator/ ./" | sudo tee /etc/apt/sources.list.d/wayback-impersonator.list
+   ```
+   *(Alternatively, if your system configuration requires the subfolder syntax, you can use `https://ajsb85.github.io/wayback-impersonator/ amd64/` as the source)*
+
+3. **Update indexes and install**:
+   ```bash
+   sudo apt update
+   sudo apt install wayback-impersonator
+   ```
+
+This installs the executable system-wide as `wayback` at `/usr/bin/wayback`.
+
+### Manual Compilation from Source
+
+#### Prerequisites
+
+You must have `libcurl-impersonate` (specifically the Chrome version `libcurl-impersonate-chrome`) installed and discoverable by the dynamic linker.
 
 ```bash
-# On Linux (ensure the shared library is in your linker path, e.g. /usr/local/lib)
+# Verify it's discoverable
 ldconfig -p | grep impersonate
 ```
 
-### Build
+#### Build
 
 ```bash
 cargo build --release
