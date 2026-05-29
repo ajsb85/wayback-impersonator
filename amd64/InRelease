@@ -1,0 +1,43 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Fri, 29 May 2026 05:06:10 +0000
+Description: Debian Repository for wayback-impersonator (amd64)
+Label: wayback-impersonator
+Origin: ajsb85
+Suite: stable
+MD5Sum:
+ 9a523f856fbe6dc4e0dbd85bf2469fdb             4333 Packages
+ a018936ab37341ec5bda0c7fa8d47467             2073 Packages.gz
+ 4e6b97f6f8b8d65b3de777929719c19a              214 Release
+SHA1:
+ a441a97f43b7d05cb7932a0be691bad1ef980bb9             4333 Packages
+ 1e245facb108b5c6f585a524744aa8930efbefb7             2073 Packages.gz
+ 10a83999f46ac8d90be88c6d2544b5fbd337ff5c              214 Release
+SHA256:
+ 5bd7bb83ffc7e86ee764b98d6f111d9382904384f34d2003a0fe238732ea0a04             4333 Packages
+ 7074385ee558cd7a6fae9b54778e5fcc92b68238e374c47ea66fbe3a1534d4a0             2073 Packages.gz
+ f041f0f4f497fb31ca814becaea745051e4b39de00a5fd9c2dea794813f93fca              214 Release
+SHA512:
+ 9bef74e020b53312e51e97bf0606654ba46c2a87b320acae6f26e901da97638e7d8cc78df1d157e6940f2d4a13e336d58865f965abc6161e9ff066f1205700f8             4333 Packages
+ a3d934b13814a72f9296ba3eb154c4dba43b5704eb261b8d0ad1067e6626aeea27a3d6ed14d8e8c047353b896dec4d6d67f09e2b23aebe43e4ed8fc84abb85ce             2073 Packages.gz
+ 0974006e5d89899b3482761f763a7010e54702bd5856a98a6fcc46b839c2b379c58c53d4f5220c1e4d9915df046ac6e133a47c3448b12becfcaa1de73c3ba0a2              214 Release
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE7PKRsnXtnV+HUfrmlVGgsabil84FAmoZHsIACgkQlVGgsabi
+l87P3xAAsRciX+xNA//rbdE8Rr4ElTVaW/mryVxz+7CIfhfujEonfg8TzYGGZHqd
+x5rhSUsuOPlspvV5zhYkQ3ubbAXEkd6hxVbb018+FGlQEkbHNvHvIXrl9XXcWQNa
+5iX+f27iVyyPRl+CSmI/RrGwbt/AegFqZBg/sPUpO/8qwtPrbKFmUbzNSiL7yLI7
+Pnk/c64ZwGbRPXMgMx/B9xUiIXbABYla+rCJqlC0mSK9SiulBsjcX8P4dGA65UZH
+EFSmMNNiVp8mLaHbNQYJlCoPzLoi4NS985ZunmUWlQiyufIU4qqApSCuVQI4PBZe
+sQEOE/472nuqtiGk+rLgRu3+1SVjIhSy+N1Tj5FPmCkCnSLkvV8O7ICXpkcQc5Zx
+1Fo2rkGnKNzV6DIr2e0Smn7ng36xgsjCqticuSP8lDoSPdDuGz8AqkFgc+I1QFpJ
+ERyB+26tHqq+tiKq7vG5D9uvVBGGLoK1rerEEVBmGOKY2rvfWyu2oqhjTMlG5RGN
+0pAtWetV/mv4tF9i33OOcFkxmMgGrNWuSpq+lfzuWUWMNcK7YTI9X4KcGa0/kndw
+oZvCKVQ9YdxiOg3yD6V7NQQF5hPFUrbiK1rPTSgMKEAt80cuOBq0JhoCOcxXCQqm
+qKZCb+6J4a2w3BL7HPepHf/Q5QQMD/wc9U6rJAELrZGb6BX+VrU=
+=ZtnG
+-----END PGP SIGNATURE-----
