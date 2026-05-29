@@ -1,6 +1,6 @@
 [package]
 name = "wayback-impersonator"
-version = "0.1.9"
+version = "1.0.0"
 authors = ["Alexander Salas Bastidas <ajsb85@firechip.dev>"]
 edition = "2024"
 description = "A concurrent, browser-impersonating scraper in Rust to download archived assets from the Internet Archive's Wayback Machine CDX API without being blocked."
@@ -11,6 +11,14 @@ keywords = ["wayback", "internet-archive", "scraper", "curl-impersonate", "brows
 categories = ["command-line-utilities", "web-programming::http-client"]
 readme = "README.md"
 
+[lib]
+name = "wayback_impersonator"
+path = "src/lib.rs"
+
+[[bin]]
+name = "wayback-impersonator"
+path = "src/main.rs"
+
 [dependencies]
 impersonate-rs = "0.1.0"
 clap = { version = "4.4", features = ["derive"] }
@@ -20,6 +28,9 @@ anyhow = "1.0"
 url = "2.5"
 flate2 = "1.0"
 brotli = "6.0"
+
+[dev-dependencies]
+tempfile = "3"
 
 [package.metadata.deb]
 name = "wayback"

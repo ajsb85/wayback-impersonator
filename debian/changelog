@@ -1,3 +1,17 @@
+wayback (1.0.0-1) unstable; urgency=medium
+
+  * Stable release 1.0.0.
+  * Refactor: extract all library logic into src/lib.rs with full rustdoc.
+  * Add 28 unit tests covering sanitize_filename, build_tasks, DownloadStatus,
+    decompress_gzip, decompress_brotli, and save_journal (journal round-trip).
+  * Add tempfile dev-dependency for hermetic journal tests.
+  * Document every public type and function with /// and //! doc comments.
+  * Add [lib] and [[bin]] targets to Cargo.toml for clean lib/binary split.
+  * src/main.rs is now a thin, documented CLI wrapper delegating to the lib.
+  * Improve final summary output with ✓ / ✗ per-file indicators.
+
+ -- Alexander Salas Bastidas <ajsb85@firechip.dev>  Thu, 29 May 2026 08:12:00 +0200
+
 wayback (0.1.9-1) unstable; urgency=low
 
   * Add man page (debian/wayback.1) with full CLI reference.
