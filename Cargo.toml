@@ -1,6 +1,6 @@
 [package]
 name = "wayback-impersonator"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Alexander Salas Bastidas <ajsb85@firechip.dev>"]
 edition = "2024"
 
