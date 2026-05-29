@@ -1,13 +1,13 @@
 Package: wayback
-Version: 0.1.9-1
+Version: 1.0.0-1
 Architecture: amd64
 Maintainer: Alexander Salas Bastidas <ajsb85@firechip.dev>
-Installed-Size: 2279
-Filename: ./wayback_0.1.9-1_amd64.deb
-Size: 858888
-MD5sum: 56f8649f739a1ec410bea6db9d14b23b
-SHA1: dc08ca9c5eb691f35414c96c107cd926912cc1ec
-SHA256: aac8a1945981b78b383522f0aaa15eeb25e65cc8fd5aa939e2bac2b026ef6b98
+Installed-Size: 2297
+Filename: ./wayback_1.0.0-1_amd64.deb
+Size: 861080
+MD5sum: 7934b5304a7d5d80a688afb5dcd86121
+SHA1: f47b5e9e9b825b74f3c611c705d25395390e0a2b
+SHA256: cc6cf9fe016df6925e80e8c1083f8034da07063ce1cac4ff7a1f92663d782adf
 Section: net
 Priority: optional
 Homepage: https://ajsb85.github.io/wayback-impersonator/
