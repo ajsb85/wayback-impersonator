@@ -17,10 +17,18 @@ jobs:
           rustup update stable
           cargo install cargo-deb
 
-      - name: Install APT utilities
+      - name: Install APT utilities and build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev apt-utils
+          sudo apt-get install -y dpkg-dev apt-utils libnss3 nss-plugin-pem ca-certificates wget libssl-dev
+
+      - name: Install libcurl-impersonate
+        run: |
+          wget https://github.com/lwthiker/curl-impersonate/releases/download/v0.6.1/libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+          tar -xvf libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+          sudo mv libcurl-impersonate-chrome.so* /usr/local/lib/
+          sudo mv libcurl-impersonate-ff.so* /usr/local/lib/
+          sudo ldconfig
 
       - name: Build DEB package
         run: |
