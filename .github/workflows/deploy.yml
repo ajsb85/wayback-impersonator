@@ -38,11 +38,17 @@ jobs:
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
           
           cd deploy
-          # Scan packages and generate index
+          # 1. Scan packages and generate index for root-level flat repo
           dpkg-scanpackages amd64 /dev/null > amd64/Packages
           gzip -9c amd64/Packages > amd64/Packages.gz
           
-          # Create Release configuration
+          # 2. Scan packages and generate index for amd64-subdirectory flat repo
+          cd amd64
+          dpkg-scanpackages . /dev/null > Packages
+          gzip -9c Packages > Packages.gz
+          cd ..
+          
+          # 3. Create Release configuration for root-level flat repo
           cat <<EOF > aptrelease.conf
           APT::FTPArchive::Release::Origin "ajsb85";
           APT::FTPArchive::Release::Label "wayback-impersonator";
@@ -53,18 +59,36 @@ jobs:
           APT::FTPArchive::Release::Description "Debian Repository for wayback-impersonator";
           EOF
           
-          # Generate Release file
+          # Generate and sign Release files for root level
           apt-ftparchive -c aptrelease.conf release . > Release
-          
-          # Sign Release
           gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" --clearsign -o InRelease Release
           gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" -b -a -o Release.gpg Release
           
-          # Export public key
-          gpg --armor --export "ajsb85@firechip.dev" > archive-key.gpg
+          # 4. Create Release configuration for amd64-subdirectory flat repo
+          cat <<EOF > aptrelease-amd64.conf
+          APT::FTPArchive::Release::Origin "ajsb85";
+          APT::FTPArchive::Release::Label "wayback-impersonator";
+          APT::FTPArchive::Release::Suite "stable";
+          APT::FTPArchive::Release::Codename "stable";
+          APT::FTPArchive::Release::Architectures "amd64";
+          APT::FTPArchive::Release::Components "main";
+          APT::FTPArchive::Release::Description "Debian Repository for wayback-impersonator (amd64)";
+          EOF
           
-          # Cleanup config
-          rm aptrelease.conf
+          # Generate and sign Release files for amd64 level
+          cd amd64
+          apt-ftparchive -c ../aptrelease-amd64.conf release . > Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" --clearsign -o InRelease Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" -b -a -o Release.gpg Release
+          cd ..
+          
+          # 5. Export public key in both binary and ASCII armored formats at root and copy to amd64
+          gpg --batch --yes --export "ajsb85@firechip.dev" > archive-key.gpg
+          gpg --batch --yes --armor --export "ajsb85@firechip.dev" > archive-key.asc
+          cp archive-key.gpg archive-key.asc amd64/
+          
+          # Cleanup configs
+          rm aptrelease.conf aptrelease-amd64.conf
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
