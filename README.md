@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-ab2e33.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/ajsb85/wayback-impersonator?color=ab2e33)](https://github.com/ajsb85/wayback-impersonator/releases)
 [![Debian package](https://img.shields.io/badge/debian-amd64-ab2e33)](https://ajsb85.github.io/wayback-impersonator/)
+[![Tests](https://img.shields.io/badge/tests-33%20passing-ab2e33)](src/lib.rs)
+[![Clippy](https://img.shields.io/badge/clippy-0%20warnings-ab2e33)](src/lib.rs)
 
 `wayback` uses [`impersonate-rs`](https://github.com/rust-impersonate/impersonate-rs) —
 a Rust FFI wrapper around `libcurl-impersonate` — to forge the TLS/JA3 handshakes,
@@ -17,6 +19,7 @@ This lets it bypass anti-bot protections that reject standard HTTP clients.
 ## Table of Contents
 
 - [Features](#features)
+- [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Debian / Ubuntu — APT Repository](#debian--ubuntu--apt-repository)
@@ -25,6 +28,7 @@ This lets it bypass anti-bot protections that reject standard HTTP clients.
 - [Usage](#usage)
   - [Options](#options)
   - [Examples](#examples)
+- [Testing](#testing)
 - [Shell Completions](#shell-completions)
 - [Man Page](#man-page)
 - [Contributing](#contributing)
@@ -43,6 +47,29 @@ This lets it bypass anti-bot protections that reject standard HTTP clients.
 | **Concurrency** | Configurable multi-threaded worker pool via `--threads` |
 | **Transparent Decompression** | Automatically decompresses Gzip (`1f 8b`) and Brotli encoded responses |
 | **Filename Sanitization** | Strips query strings and path separators to produce clean local filenames |
+| **Library / Binary split** | All logic lives in `src/lib.rs` (testable, documented); `src/main.rs` is a thin CLI wrapper |
+| **Full test suite** | 27 unit tests + 6 doc-tests — 0 clippy warnings, 0 rustdoc warnings |
+
+---
+
+## Architecture
+
+Since `v1.0.0` the codebase is split into a library crate and a binary crate:
+
+```
+src/
+├── lib.rs      # Public library — all logic, rustdoc comments, unit tests
+│               #   DownloadStatus · DownloadTask · Journal · CdxRecord
+│               #   query_cdx · build_tasks · sanitize_filename
+│               #   save_journal · decompress_gzip · decompress_brotli
+└── main.rs     # Thin CLI entry point — Clap argument parsing + orchestration
+                #   Imports everything from wayback_impersonator::*
+```
+
+This split means:
+- **All pure logic is unit-testable** without spawning a network connection.
+- **`cargo doc`** generates a full API reference for every public item.
+- **External tools** can depend on `wayback-impersonator` as a library crate.
 
 ---
 
@@ -126,9 +153,9 @@ sudo apt update && sudo apt upgrade wayback
 **Verifying the GPG signature on the `.deb` file:**
 
 ```bash
-wget https://ajsb85.github.io/wayback-impersonator/amd64/wayback_0.1.9-1_amd64.deb
-wget https://ajsb85.github.io/wayback-impersonator/amd64/wayback_0.1.9-1_amd64.deb.asc
-gpg --verify wayback_0.1.9-1_amd64.deb.asc wayback_0.1.9-1_amd64.deb
+wget https://ajsb85.github.io/wayback-impersonator/amd64/wayback_1.0.0-1_amd64.deb
+wget https://ajsb85.github.io/wayback-impersonator/amd64/wayback_1.0.0-1_amd64.deb.asc
+gpg --verify wayback_1.0.0-1_amd64.deb.asc wayback_1.0.0-1_amd64.deb
 ```
 
 ---
@@ -139,10 +166,10 @@ If you prefer a one-off install without adding the APT repository:
 
 ```bash
 # Download the .deb from the latest release
-wget https://github.com/ajsb85/wayback-impersonator/releases/latest/download/wayback_0.1.9-1_amd64.deb
+wget https://github.com/ajsb85/wayback-impersonator/releases/latest/download/wayback_1.0.0-1_amd64.deb
 
 # Install
-sudo dpkg -i wayback_0.1.9-1_amd64.deb
+sudo dpkg -i wayback_1.0.0-1_amd64.deb
 ```
 
 > **Note:** You will not receive automatic updates with this method.
@@ -175,6 +202,15 @@ cargo deb
 sudo dpkg -i target/debian/wayback_*.deb
 ```
 
+**Quality checks (run before opening a PR):**
+
+```bash
+cargo fmt --check                      # formatting
+cargo clippy --all-targets -- -D warnings  # linting — must be 0 warnings
+cargo test                             # unit + doc tests — must all pass
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps  # docs — must be 0 warnings
+```
+
 ---
 
 ## Usage
@@ -182,7 +218,7 @@ sudo dpkg -i target/debian/wayback_*.deb
 ### Options
 
 ```text
-wayback 0.1.9
+wayback 1.0.0
 A concurrent, browser-impersonating scraper in Rust to download archived assets
 from the Internet Archive's Wayback Machine CDX API without being blocked.
 
@@ -272,6 +308,75 @@ wayback \
 wayback --url archive.org --mime "image/webp" \
         --browser firefox135 --threads 2 --verbose
 ```
+
+---
+
+## Testing
+
+The test suite lives entirely in [`src/lib.rs`](src/lib.rs) and covers every
+pure function without touching the network.
+
+```bash
+cargo test
+```
+
+```
+running 27 tests
+test tests::brotli_invalid_input_falls_back_to_original ... ok
+test tests::brotli_roundtrip                           ... ok
+test tests::brotli_empty_payload                       ... ok
+test tests::build_tasks_all_statuses_start_as_pending  ... ok
+test tests::build_tasks_dedup_keeps_latest_timestamp   ... ok
+test tests::build_tasks_empty_input                    ... ok
+test tests::build_tasks_mime_css_uses_css_extension    ... ok
+test tests::build_tasks_multiple_unique_urls           ... ok
+test tests::build_tasks_single_record                  ... ok
+test tests::download_status_equality                   ... ok
+test tests::download_status_failed_stores_reason       ... ok
+test tests::gzip_detects_magic_bytes                   ... ok
+test tests::gzip_empty_payload                         ... ok
+test tests::gzip_invalid_bytes_returns_error           ... ok
+test tests::gzip_roundtrip                             ... ok
+test tests::journal_atomic_write_removes_tmp_file      ... ok
+test tests::journal_empty_tasks_list                   ... ok
+test tests::journal_save_and_reload_roundtrip          ... ok
+test tests::journal_serialises_failed_status_reason    ... ok
+test tests::journal_write_is_valid_json                ... ok
+test tests::sanitize_chooses_first_matching_extension  ... ok
+test tests::sanitize_invalid_url_returns_input         ... ok
+test tests::sanitize_nested_path_replaces_slashes      ... ok
+test tests::sanitize_query_string_appended_when_no_ext_match ... ok
+test tests::sanitize_root_path_trims_leading_slash     ... ok
+test tests::sanitize_simple_path                       ... ok
+test tests::sanitize_strips_query_after_extension      ... ok
+test result: ok. 27 passed; 0 failed; 0 ignored
+
+Doc-tests wayback_impersonator
+test result: ok. 6 passed; 0 failed; 0 ignored
+```
+
+### Coverage by module
+
+| Module | Tests | What is covered |
+|---|---|---|
+| `sanitize_filename` | 7 | Simple path, nested `/`, query strip, no-ext fallback, invalid URL, root path, first-ext priority |
+| `build_tasks` | 6 | Empty input, single record, dedup keeps latest, multiple unique URLs, all-pending status, MIME→extension mapping |
+| `DownloadStatus` | 2 | `Failed` reason stored, equality/inequality across variants |
+| `decompress_gzip` | 4 | Roundtrip, empty payload, invalid→error, magic-byte `1f 8b` check |
+| `decompress_brotli` | 3 | Roundtrip, empty payload, invalid→pass-through fallback |
+| `save_journal` | 5 | Round-trip reload, valid JSON output, no `.tmp` left on disk, `Failed` reason survives reload, empty tasks list |
+| **Doc-tests** | 6 | All `///` examples in `lib.rs` compile and run correctly |
+
+### Adding a new test
+
+1. Add your test inside the `#[cfg(test)] mod tests { … }` block in
+   [`src/lib.rs`](src/lib.rs).
+2. Follow the naming convention `module_description` (e.g.
+   `sanitize_strips_query_after_extension`).
+3. Use [`tempfile::tempdir()`](https://docs.rs/tempfile) for any tests that
+   write to disk — never hard-code `/tmp` paths.
+4. Do not make network calls from unit tests; integration tests requiring
+   the Wayback Machine CDX API should be marked `#[ignore]`.
 
 ---
 

@@ -16,6 +16,8 @@ CI/CD pipeline, and how to add new content (man page, completions, etc.).
   - [Shell Completions](#shell-completions)
   - [Copyright & Changelog](#copyright--changelog)
   - [Wiring Assets into cargo-deb](#wiring-assets-into-cargo-deb)
+- [Code Architecture](#code-architecture)
+- [Testing](#testing)
 - [Releasing a New Version](#releasing-a-new-version)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Coding Standards](#coding-standards)
@@ -38,9 +40,10 @@ cd wayback-impersonator
 # 2. Create a short-lived branch
 git checkout -b feat/my-feature
 
-# 3. Develop, verify compilation
+# 3. Develop and verify
 cargo build
-cargo test
+cargo test                              # must be 0 failures
+cargo clippy --all-targets -- -D warnings  # must be 0 warnings
 
 # 4. Commit with Conventional Commits format (see below)
 git commit -S -m "feat(browser): add safari18 impersonation profile"
@@ -91,6 +94,8 @@ feat(resume): add --retry-errors flag for targeted failure retry
 fix(decompress): handle truncated brotli stream without panicking
 docs(readme): add shell completion installation instructions
 packaging(man): update wayback.1 with --retry-errors option
+test(sanitize): add edge-case for root path trimming
+fix(lint): resolve clippy::collapsible_if in decompression block
 chore(ci): upgrade actions/checkout to v4 for Node 24 compatibility
 ```
 
@@ -113,8 +118,8 @@ git config --local tag.gpgsign true
 ### Sign a release tag
 
 ```bash
-git tag -s v0.1.9 -m "feat: release v0.1.9"
-git push origin v0.1.9
+git tag -s v1.0.0 -m "feat: release v1.0.0"
+git push origin v1.0.0
 ```
 
 Pushing a `v*` tag triggers the automated release workflow (see [CI/CD Pipeline](#cicd-pipeline)).
@@ -268,6 +273,127 @@ be committed to git.
 
 ---
 
+## Code Architecture
+
+Since `v1.0.0` the repository uses a **library + binary crate** split:
+
+```
+src/
+├── lib.rs   ← wayback_impersonator (library crate)
+│             All public types and functions with rustdoc comments.
+│             Contains the full #[cfg(test)] unit-test suite.
+│             Crate-level //! doc comment describes the overall design.
+│
+└── main.rs  ← wayback-impersonator (binary crate)
+              Clap CLI definition + orchestration loop only.
+              Uses `wayback_impersonator::*` — no business logic here.
+```
+
+**Rules:**
+
+- **All new logic goes in `lib.rs`** and must be `pub` with a `///` doc comment.
+- **`main.rs`** must stay thin — it may only contain `Cli` struct, `main()`,
+  and thread-spawning glue code.
+- **New public types** must derive `Debug` and, where serialised, `Serialize +
+  Deserialize`.
+- **Doc-tests** in `///` examples are automatically run by `cargo test` —
+  keep them accurate and compiling.
+
+---
+
+## Testing
+
+All tests live in the `#[cfg(test)] mod tests` block at the bottom of
+[`src/lib.rs`](src/lib.rs). They run fully offline — no network required.
+
+### Running the suite
+
+```bash
+# Run all unit tests + doc-tests
+cargo test
+
+# Run only tests matching a pattern
+cargo test sanitize
+cargo test journal
+
+# Run a single test by exact name
+cargo test tests::build_tasks_dedup_keeps_latest_timestamp
+
+# Run ignored integration tests (require CDX API access)
+cargo test -- --ignored
+```
+
+### Test inventory (33 total)
+
+| Group | Count | Functions under test |
+|---|---|---|
+| `sanitize_filename` | 7 | Path normalisation, query strip, ext truncation, invalid URL fallback |
+| `build_tasks` | 6 | Deduplication, latest-timestamp selection, MIME→extension, all-pending status |
+| `DownloadStatus` | 2 | Enum equality, `Failed` reason round-trip |
+| `decompress_gzip` | 4 | Roundtrip, empty payload, invalid bytes → error, magic-byte detection |
+| `decompress_brotli` | 3 | Roundtrip, empty payload, invalid bytes → passthrough fallback |
+| `save_journal` | 5 | JSON round-trip, valid JSON, atomic rename (no `.tmp`), `Failed` reason, empty tasks |
+| Doc-tests | 6 | All `///` code examples in `lib.rs` |
+
+### Writing a new test
+
+```rust
+#[test]
+fn my_module_scenario_description() {
+    // Arrange
+    let input = ...;
+
+    // Act
+    let result = my_function(input);
+
+    // Assert
+    assert_eq!(result, expected);
+}
+```
+
+**Rules:**
+
+- Name tests as `module_scenario` (e.g. `sanitize_strips_query_after_extension`).
+- Use `tempfile::tempdir()` for all disk I/O — never hard-code `/tmp` paths.
+- Mark tests that require the live CDX API with `#[ignore]`:
+  ```rust
+  #[test]
+  #[ignore = "requires live Wayback Machine CDX API"]
+  fn integration_query_cdx_returns_records() { ... }
+  ```
+- Helper functions (e.g. compression fixtures) go above the tests, not inside
+  individual `#[test]` functions, so they can be shared.
+- Do not use `unwrap()` in assertion logic — use `expect("message")` so failures
+  are meaningful.
+
+### Linting
+
+All code must pass clippy with zero warnings:
+
+```bash
+cargo clippy --all-targets --all-features
+```
+
+The specific lint that was fixed in `v1.0.0` (`clippy::collapsible_if`) is a
+good example of what to watch for: nested `if { if let Ok(...) }` should always
+be collapsed to `if condition && let Ok(d) = expr { }` in edition 2024+.
+
+To apply automatic fixes suggested by clippy:
+
+```bash
+cargo clippy --fix --all-targets
+```
+
+### Rustdoc
+
+All doc-comments must also be warning-free:
+
+```bash
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+```
+
+---
+
 ## Releasing a New Version
 
 Follow these steps in order:
@@ -281,20 +407,28 @@ Follow these steps in order:
    .TH WAYBACK 1 "YYYY-MM-DD" "X.Y.Z" "Wayback Machine Downloader"
    ```
 
-4. **Commit** everything:
+4. **Run the full quality gate locally** and fix any issues before tagging:
+   ```bash
+   cargo fmt --check
+   cargo clippy --all-targets -- -D warnings
+   cargo test
+   RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+   ```
+
+5. **Commit** everything:
    ```bash
    git add Cargo.toml debian/
    git commit -S -m "chore: bump to vX.Y.Z"
    git push origin main
    ```
 
-5. **Create and push a signed tag** — this triggers the full CI/CD pipeline:
+6. **Create and push a signed tag** — this triggers the full CI/CD pipeline:
    ```bash
    git tag -a vX.Y.Z -m "chore: release vX.Y.Z"
    git push origin vX.Y.Z
    ```
 
-6. Monitor the workflow at
+7. Monitor the workflow at
    [github.com/ajsb85/wayback-impersonator/actions](https://github.com/ajsb85/wayback-impersonator/actions).
 
 ---
@@ -346,18 +480,63 @@ Push v* tag
 
 ## Coding Standards
 
-- **Rust edition**: 2024 (set in `Cargo.toml`).
-- **Error handling**: use `anyhow` for application errors; avoid `unwrap()` in
-  non-test code.
-- **Formatting**: run `cargo fmt` before committing.
-- **Linting**: run `cargo clippy -- -D warnings` and fix all warnings.
-- **No unsafe**: avoid `unsafe` blocks unless strictly necessary and documented.
-- **Thread safety**: shared state must use `Arc<Mutex<T>>` or atomics.
+### Rust edition
+
+**2024** (set in `Cargo.toml`). Use edition-2024 features where appropriate,
+including `let` chains in `if` conditions (`if cond && let Ok(x) = expr { }`).
+
+### Error handling
+
+- Use [`anyhow`](https://docs.rs/anyhow) for all application-level errors.
+- Avoid `unwrap()` in non-test code — use `?` or `.context("message")`.
+- In tests, prefer `.expect("descriptive message")` over bare `.unwrap()`.
+
+### Code documentation
+
+- Every `pub` item in `src/lib.rs` **must** have a `///` doc comment.
+- Module-level docs use `//!` at the top of the file.
+- Doc-tests (`///` code blocks) must compile and pass — they run with `cargo test`.
+- Run `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps` to catch broken links and
+  missing docs.
+
+### Formatting & linting
 
 ```bash
-# Full local check before pushing
-cargo fmt --check
-cargo clippy -- -D warnings
-cargo build --release
-cargo test
+cargo fmt                              # auto-format (run before committing)
+cargo fmt --check                      # CI-style check (fails if unformatted)
+cargo clippy --all-targets -- -D warnings  # 0 warnings enforced
 ```
+
+Common clippy lints to watch for:
+
+| Lint | Rule |
+|---|---|
+| `clippy::collapsible_if` | Collapse `if { if let }` → `if cond && let Ok(x) = expr` |
+| `clippy::needless_pass_by_value` | Prefer `&str` over `String` for read-only args |
+| `clippy::clone_on_ref_ptr` | Prefer `Arc::clone(&x)` over `x.clone()` for `Arc<T>` |
+| `clippy::unwrap_used` | Avoid `.unwrap()` — use `?` or `.expect()` |
+
+### Thread safety
+
+- Shared mutable state must use `Arc<Mutex<T>>`.
+- Atomic counters/indices use `Arc<AtomicUsize>` with `Ordering::Relaxed`
+  for task-dispatch and stronger orderings only when synchronisation is required.
+
+### No unsafe
+
+Avoid `unsafe` blocks. If absolutely required, document with a `// SAFETY:`
+comment explaining every invariant that makes the code sound.
+
+### Full pre-push gate
+
+Run this before every `git push` to `main` or before tagging a release:
+
+```bash
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo test
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+cargo build --release
+```
+
+All five commands must exit with code `0`.
