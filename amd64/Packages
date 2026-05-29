@@ -1,13 +1,13 @@
 Package: wayback
-Version: 0.1.2-1
+Version: 0.1.3-1
 Architecture: amd64
 Maintainer: Alexander Salas Bastidas <ajsb85@firechip.dev>
 Installed-Size: 2260
-Filename: ./wayback_0.1.2-1_amd64.deb
-Size: 855004
-MD5sum: c7f4ebbe6a267da09450adea4a31dee3
-SHA1: ebe95b25409e6686f6f5a7c9fe925ca08fb45d71
-SHA256: a39fcfb19d34bc12ef7cd786de17c60521ddbdd8cea7241eecd89b6d1599a65f
+Filename: ./wayback_0.1.3-1_amd64.deb
+Size: 855492
+MD5sum: 16812956983ef966dae9090fbe66d32e
+SHA1: b5df7cc3a17748e9689b10399961452e379c546d
+SHA256: 99a999c5b4d2b7c093c0c4ee929c8747d0a468c02ade20d453d72c9805805a09
 Priority: optional
 Description: [generated from Rust crate wayback-impersonator]
  # Wayback Impersonator
@@ -39,11 +39,52 @@ Description: [generated from Rust crate wayback-impersonator]
  .
  ## Installation
  .
+ ### Prerequisite: Installing `libcurl-impersonate`
+ .
+ `wayback` utilizes the `impersonate-rs` crate, which links dynamically to
+ `libcurl-impersonate-chrome`. Because this FFI library is not a default package
+ in the official Ubuntu/Debian repositories, it is not listed as a strict APT
+ package dependency (this prevents installation failures during `apt install`).
+ .
+ You **must** install `libcurl-impersonate` on your system for `wayback` to run.
+ .
+ #### Quick Install (Pre-compiled Binaries)
+ .
+ Run these commands to download and install the Chrome impersonation shared
+ libraries to your dynamic linker path:
+ .
+ ```bash
+ # 1. Install standard TLS/NSS dependencies
+ sudo apt-get update && sudo apt-get install -y libnss3 nss-plugin-pem
+ ca-certificates wget
+ .
+ # 2. Download libcurl-impersonate (v0.6.1)
+ wget
+ https://github.com/lwthiker/curl-impersonate/releases/download/v0.6.1/libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+ tar -xvf libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+ .
+ # 3. Move libraries to your system linker path and reload cache
+ sudo mv libcurl-impersonate-chrome.so* /usr/local/lib/
+ sudo mv libcurl-impersonate-ff.so* /usr/local/lib/
+ sudo ldconfig
+ .
+ # 4. Clean up archive
+ rm -f libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+ ```
+ .
+ Verify that it is correctly installed and discoverable:
+ ```bash
+ ldconfig -p | grep impersonate
+ ```
+ *(You should see entries for `libcurl-impersonate-chrome.so` and
+ `libcurl-impersonate.so`)*
+ .
+ ---
+ .
  ### Debian / Ubuntu (System-wide APT Repository)
  .
- Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub
- Pages. You can configure `apt` to trust the repository and install
- `wayback-impersonator` system-wide:
+ Once the prerequisite `libcurl-impersonate` is installed, you can configure
+ `apt` to trust our repository and install `wayback` system-wide:
  .
  1. **Download and trust the repository GPG key**:
     ```bash
@@ -70,11 +111,6 @@ Description: [generated from Rust crate wayback-impersonator]
  This installs the executable system-wide as `wayback` at `/usr/bin/wayback`.
  .
  ### Manual Compilation from Source
- .
- #### Prerequisites
- .
- You must have `libcurl-impersonate` (specifically the Chrome version
- `libcurl-impersonate-chrome`) installed and discoverable by the dynamic linker.
  .
  ```bash
  # Verify it's discoverable
@@ -124,20 +160,20 @@ Description: [generated from Rust crate wayback-impersonator]
  .
  #### 1. Download unique WebAssembly files
  ```bash
- ./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm"
- --output-dir wasm_downloads --browser chrome124 --threads 8
+ wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
+ --browser chrome124 --threads 8
  ```
  .
  #### 2. Resume a download session
  ```bash
- ./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm"
- --output-dir wasm_downloads --resume
+ wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
+ --resume
  ```
  .
  #### 3. Retry only rate-limited (HTTP 429) errors
  ```bash
- ./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm"
- --output-dir wasm_downloads --resume --retry-errors "429"
+ wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads
+ --resume --retry-errors "429"
  ```
  .
  ## Contributing
