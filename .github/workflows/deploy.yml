@@ -62,12 +62,12 @@ jobs:
           # 3. Create Release configuration for root-level flat repo
           cat <<EOF > aptrelease.conf
           APT::FTPArchive::Release::Origin "ajsb85";
-          APT::FTPArchive::Release::Label "wayback-impersonator";
+          APT::FTPArchive::Release::Label "wayback";
           APT::FTPArchive::Release::Suite "stable";
           APT::FTPArchive::Release::Codename "stable";
           APT::FTPArchive::Release::Architectures "amd64";
           APT::FTPArchive::Release::Components "main";
-          APT::FTPArchive::Release::Description "Debian Repository for wayback-impersonator";
+          APT::FTPArchive::Release::Description "Debian Repository for wayback";
           EOF
           
           # Generate and sign Release files for root level
@@ -78,12 +78,12 @@ jobs:
           # 4. Create Release configuration for amd64-subdirectory flat repo
           cat <<EOF > aptrelease-amd64.conf
           APT::FTPArchive::Release::Origin "ajsb85";
-          APT::FTPArchive::Release::Label "wayback-impersonator";
+          APT::FTPArchive::Release::Label "wayback";
           APT::FTPArchive::Release::Suite "stable";
           APT::FTPArchive::Release::Codename "stable";
           APT::FTPArchive::Release::Architectures "amd64";
           APT::FTPArchive::Release::Components "main";
-          APT::FTPArchive::Release::Description "Debian Repository for wayback-impersonator (amd64)";
+          APT::FTPArchive::Release::Description "Debian Repository for wayback (amd64)";
           EOF
           
           # Generate and sign Release files for amd64 level

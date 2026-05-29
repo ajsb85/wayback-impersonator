@@ -1,6 +1,6 @@
 [package]
 name = "wayback-impersonator"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 
 [dependencies]
@@ -14,6 +14,7 @@ flate2 = "1.0"
 brotli = "6.0"
 
 [package.metadata.deb]
+name = "wayback"
 maintainer = "Alexander Salas Bastidas <ajsb85@firechip.dev>"
 assets = [
     ["target/release/wayback-impersonator", "/usr/bin/wayback", "755"],

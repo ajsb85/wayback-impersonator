@@ -20,20 +20,20 @@ Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub Pag
 
 1. **Download and trust the repository GPG key**:
    ```bash
-   sudo wget -O /usr/share/keyrings/wayback-impersonator-keyring.gpg https://ajsb85.github.io/wayback-impersonator/archive-key.gpg
+   sudo wget -O /usr/share/keyrings/wayback-keyring.gpg https://ajsb85.github.io/wayback-impersonator/amd64/archive-key.gpg
    ```
-   *(Alternatively, you can retrieve the ASCII-armored public key at `https://ajsb85.github.io/wayback-impersonator/archive-key.asc`)*
+   *(Alternatively, you can retrieve the ASCII-armored public key at `https://ajsb85.github.io/wayback-impersonator/amd64/archive-key.asc`)*
 
 2. **Add the repository to your APT sources**:
    ```bash
    # Add the flat repository source
-   echo "deb [signed-by=/usr/share/keyrings/wayback-impersonator-keyring.gpg] https://ajsb85.github.io/wayback-impersonator/amd64/ ./" | sudo tee /etc/apt/sources.list.d/wayback-impersonator.list
+   echo "deb [signed-by=/usr/share/keyrings/wayback-keyring.gpg] https://ajsb85.github.io/wayback-impersonator/amd64/ ./" | sudo tee /etc/apt/sources.list.d/wayback.list
    ```
 
 3. **Update indexes and install**:
    ```bash
    sudo apt update
-   sudo apt install wayback-impersonator
+   sudo apt install wayback
    ```
 
 This installs the executable system-wide as `wayback` at `/usr/bin/wayback`.
