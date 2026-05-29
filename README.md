@@ -14,9 +14,44 @@
 
 ## Installation
 
+### Prerequisite: Installing `libcurl-impersonate`
+
+`wayback` utilizes the `impersonate-rs` crate, which links dynamically to `libcurl-impersonate-chrome`. Because this FFI library is not a default package in the official Ubuntu/Debian repositories, it is not listed as a strict APT package dependency (this prevents installation failures during `apt install`).
+
+You **must** install `libcurl-impersonate` on your system for `wayback` to run.
+
+#### Quick Install (Pre-compiled Binaries)
+
+Run these commands to download and install the Chrome impersonation shared libraries to your dynamic linker path:
+
+```bash
+# 1. Install standard TLS/NSS dependencies
+sudo apt-get update && sudo apt-get install -y libnss3 nss-plugin-pem ca-certificates wget
+
+# 2. Download libcurl-impersonate (v0.6.1)
+wget https://github.com/lwthiker/curl-impersonate/releases/download/v0.6.1/libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+tar -xvf libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+
+# 3. Move libraries to your system linker path and reload cache
+sudo mv libcurl-impersonate-chrome.so* /usr/local/lib/
+sudo mv libcurl-impersonate-ff.so* /usr/local/lib/
+sudo ldconfig
+
+# 4. Clean up archive
+rm -f libcurl-impersonate-v0.6.1.x86_64-linux-gnu.tar.gz
+```
+
+Verify that it is correctly installed and discoverable:
+```bash
+ldconfig -p | grep impersonate
+```
+*(You should see entries for `libcurl-impersonate-chrome.so` and `libcurl-impersonate.so`)*
+
+---
+
 ### Debian / Ubuntu (System-wide APT Repository)
 
-Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub Pages. You can configure `apt` to trust the repository and install `wayback-impersonator` system-wide:
+Once the prerequisite `libcurl-impersonate` is installed, you can configure `apt` to trust our repository and install `wayback` system-wide:
 
 1. **Download and trust the repository GPG key**:
    ```bash
@@ -39,10 +74,6 @@ Pre-compiled `.deb` packages are hosted in a custom APT repository on GitHub Pag
 This installs the executable system-wide as `wayback` at `/usr/bin/wayback`.
 
 ### Manual Compilation from Source
-
-#### Prerequisites
-
-You must have `libcurl-impersonate` (specifically the Chrome version `libcurl-impersonate-chrome`) installed and discoverable by the dynamic linker.
 
 ```bash
 # Verify it's discoverable
