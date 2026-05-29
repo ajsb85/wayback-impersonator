@@ -98,14 +98,29 @@ jobs:
           gpg --batch --yes --armor --export "ajsb85@firechip.dev" > archive-key.asc
           cp archive-key.gpg archive-key.asc amd64/
           
-          # 6. Generate index.html and .nojekyll
+          # Detached GPG signature for the Debian package itself
           VERSION=$(grep -m1 '^version = ' ../Cargo.toml | cut -d '"' -f 2)
+          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" --armor --detach-sign amd64/wayback_${VERSION}-1_amd64.deb
+          
+          # 6. Generate index.html and .nojekyll
           touch .nojekyll
           cp ../index.html .
           sed -i "s/{{VERSION}}/${VERSION}/g" index.html
           
           # Cleanup configs
           rm aptrelease.conf aptrelease-amd64.conf
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(grep -m1 '^version = ' Cargo.toml | cut -d '"' -f 2)
+          gh release create "v${VERSION}" \
+            target/debian/wayback_${VERSION}-1_amd64.deb \
+            deploy/amd64/wayback_${VERSION}-1_amd64.deb.asc \
+            --title "Release v${VERSION}" \
+            --notes "Debian repository release and installation package for wayback v${VERSION}." \
+            --clobber || true
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
