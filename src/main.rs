@@ -8,7 +8,13 @@ use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[derive(Parser, Debug)]
-#[command(name = "impersonate_downloader", about = "Robust browser-impersonated scraper using impersonate-rs")]
+#[command(
+    name = "wayback",
+    version,
+    author,
+    about = "Robust browser-impersonated Wayback Machine scraper",
+    long_about = "A concurrent, browser-impersonating scraper in Rust to download archived assets from the Internet Archive's Wayback Machine CDX API without being blocked."
+)]
 struct Cli {
     /// The target domain (e.g. wokwi.com) or a direct CDX search URL
     #[arg(short, long)]
