@@ -241,20 +241,14 @@ fn main() -> anyhow::Result<()> {
                             // Transparent decompression.
                             if let Some(enc) = resp.headers().get("content-encoding") {
                                 let enc = enc.to_lowercase();
-                                if enc.contains("gzip") {
-                                    if let Ok(d) = decompress_gzip(&body) {
-                                        body = d;
-                                    }
-                                } else if enc.contains("br") {
-                                    if let Ok(d) = decompress_brotli(&body) {
-                                        body = d;
-                                    }
-                                }
-                            } else if body.starts_with(&[0x1f, 0x8b]) {
-                                // Gzip magic bytes present without explicit header.
-                                if let Ok(d) = decompress_gzip(&body) {
+                                if enc.contains("gzip") && let Ok(d) = decompress_gzip(&body) {
+                                    body = d;
+                                } else if enc.contains("br") && let Ok(d) = decompress_brotli(&body) {
                                     body = d;
                                 }
+                            } else if body.starts_with(&[0x1f, 0x8b]) && let Ok(d) = decompress_gzip(&body) {
+                                // Gzip magic bytes present without explicit header.
+                                body = d;
                             }
 
                             result = std::fs::write(&dest, body)
