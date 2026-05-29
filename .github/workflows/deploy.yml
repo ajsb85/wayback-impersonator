@@ -1,0 +1,73 @@
+name: Deploy Debian Repo
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust & cargo-deb
+        run: |
+          rustup update stable
+          cargo install cargo-deb
+
+      - name: Install APT utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev apt-utils
+
+      - name: Build DEB package
+        run: |
+          cargo build --release
+          cargo deb
+
+      - name: Setup Repository Directory
+        run: |
+          mkdir -p deploy/amd64
+          cp target/debian/*.deb deploy/amd64/
+
+      - name: Import GPG Key & Sign
+        run: |
+          # Import secret key
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          
+          cd deploy
+          # Scan packages and generate index
+          dpkg-scanpackages amd64 /dev/null > amd64/Packages
+          gzip -9c amd64/Packages > amd64/Packages.gz
+          
+          # Create Release configuration
+          cat <<EOF > aptrelease.conf
+          APT::FTPArchive::Release::Origin "ajsb85";
+          APT::FTPArchive::Release::Label "wayback-impersonator";
+          APT::FTPArchive::Release::Suite "stable";
+          APT::FTPArchive::Release::Codename "stable";
+          APT::FTPArchive::Release::Architectures "amd64";
+          APT::FTPArchive::Release::Components "main";
+          APT::FTPArchive::Release::Description "Debian Repository for wayback-impersonator";
+          EOF
+          
+          # Generate Release file
+          apt-ftparchive -c aptrelease.conf release . > Release
+          
+          # Sign Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" --clearsign -o InRelease Release
+          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" -b -a -o Release.gpg Release
+          
+          # Export public key
+          gpg --armor --export "ajsb85@firechip.dev" > archive-key.gpg
+          
+          # Cleanup config
+          rm aptrelease.conf
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: deploy
+          branch: gh-pages

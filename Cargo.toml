@@ -13,3 +13,8 @@ url = "2.5"
 flate2 = "1.0"
 brotli = "6.0"
 
+[package.metadata.deb]
+maintainer = "Alexander Salas Bastidas <ajsb85@firechip.dev>"
+assets = [
+    ["target/release/wayback-impersonator", "/usr/bin/wayback", "755"],
+]
