@@ -83,17 +83,17 @@ Options:
 
 #### 1. Download unique WebAssembly files
 ```bash
-./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --browser chrome124 --threads 8
+wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --browser chrome124 --threads 8
 ```
 
 #### 2. Resume a download session
 ```bash
-./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --resume
+wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --resume
 ```
 
 #### 3. Retry only rate-limited (HTTP 429) errors
 ```bash
-./target/release/wayback-impersonator --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --resume --retry-errors "429"
+wayback --url wokwi.com --mime "application/wasm" --output-dir wasm_downloads --resume --retry-errors "429"
 ```
 
 ## Contributing
