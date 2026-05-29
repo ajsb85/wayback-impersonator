@@ -119,8 +119,7 @@ jobs:
             target/debian/wayback_${VERSION}-1_amd64.deb \
             deploy/amd64/wayback_${VERSION}-1_amd64.deb.asc \
             --title "Release v${VERSION}" \
-            --notes "Debian repository release and installation package for wayback v${VERSION}." \
-            --clobber || true
+            --notes "Debian repository release and installation package for wayback v${VERSION}."
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
