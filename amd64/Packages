@@ -1,13 +1,13 @@
 Package: wayback
-Version: 0.1.6-1
+Version: 0.1.7-1
 Architecture: amd64
 Maintainer: Alexander Salas Bastidas <ajsb85@firechip.dev>
 Installed-Size: 2260
-Filename: ./wayback_0.1.6-1_amd64.deb
-Size: 855460
-MD5sum: 1911ff11fd9be3790a2976073d0623c1
-SHA1: 097a4f6893df2b6e477813e0140bb2317962a722
-SHA256: 0ba5c779956065c19e1a3de4ef8b39ba6158fb740f473dd374217722592f00b7
+Filename: ./wayback_0.1.7-1_amd64.deb
+Size: 855924
+MD5sum: 378fcd2f7cf3b30c5d2101c76607addd
+SHA1: ebdd7361111eb0473c873079c9c92597cbaca04e
+SHA256: 8c9de11fbf6676419863d64c39713093f2c707872bbaa68e069e7f037e5ef24b
 Priority: optional
 Description: [generated from Rust crate wayback-impersonator]
  # Wayback Impersonator
