@@ -1,0 +1,189 @@
+.TH WAYBACK 1 "2026-05-29" "0.1.9" "Wayback Machine Downloader"
+.\"
+.\" wayback.1 - manual page for the wayback CLI tool
+.\" SPDX-License-Identifier: MIT
+.\"
+.SH NAME
+wayback \- browser-impersonated Wayback Machine asset downloader
+.SH SYNOPSIS
+.B wayback
+.B \-\-url
+.I DOMAIN
+.B \-\-mime
+.I MIME_TYPE
+.RI [ OPTIONS ]
+.SH DESCRIPTION
+.B wayback
+is a concurrent, browser-impersonating scraper written in Rust that downloads
+archived assets from the Internet Archive's Wayback Machine CDX API without
+being blocked by anti-bot measures.
+.PP
+It uses
+.B libcurl-impersonate
+to mimic the TLS fingerprint and HTTP headers of real browsers (Chrome, Firefox,
+Edge, Safari, and Tor Browser), allowing it to bypass bot-detection mechanisms
+that reject standard HTTP clients.
+.PP
+Results are deduplicated by URL key, keeping the latest captured version of each
+asset. Downloads are journalled to a JSON file so interrupted sessions can be
+resumed with
+.BR \-\-resume .
+.SH OPTIONS
+.TP
+.BR \-u ", " \-\-url \ \fIDOMAIN\fR
+The target domain to scrape (e.g.\&
+.IR wokwi.com )
+or a full CDX search URL.
+This option is \fBrequired\fR.
+.TP
+.BR \-m ", " \-\-mime \ \fIMIME_TYPE\fR
+The MIME type to filter on the CDX API (e.g.\&
+.IR application/wasm ,
+.IR image/png ,
+.IR text/css ).
+This option is \fBrequired\fR.
+.TP
+.BR \-o ", " \-\-output\-dir \ \fIDIR\fR
+Directory where downloaded assets and the session journal will be stored.
+Defaults to
+.IR downloads/ .
+.TP
+.BR \-b ", " \-\-browser \ \fIPROFILE\fR
+Browser profile to impersonate.
+Valid values:
+.IR chrome ,
+.IR firefox ,
+.IR edge ,
+.IR safari ,
+.IR tor ,
+and versioned variants such as
+.IR chrome124 ,
+.IR firefox135 .
+Defaults to
+.IR chrome .
+.TP
+.BR \-r ", " \-\-resume
+Resume a previously interrupted download session by loading the journal from
+the output directory.
+.TP
+.B \-\-retry\-errors \ \fIPATTERN\fR
+Retry only downloads whose error message contains
+.I PATTERN
+(case-insensitive substring match).
+Use
+.B all
+to retry every failed download.
+.TP
+.BR \-t ", " \-\-threads \ \fIN\fR
+Number of concurrent downloader threads (default:
+.BR 4 ).
+.TP
+.B \-\-max\-retries \ \fIN\fR
+Maximum number of retry attempts per individual download (default:
+.BR 5 ).
+Retries use exponential back-off starting at 500 ms.
+.TP
+.BR \-v ", " \-\-verbose
+Enable verbose logging to stdout.
+.TP
+.BR \-V ", " \-\-version
+Print version information and exit.
+.TP
+.BR \-h ", " \-\-help
+Print a short help summary.
+.BR \-\-help
+prints the full help with all defaults.
+.SH EXAMPLES
+Download all archived WebAssembly files from
+.IR wokwi.com :
+.PP
+.RS
+.EX
+wayback \-\-url wokwi.com \-\-mime application/wasm
+.EE
+.RE
+.PP
+Download archived PNG images using Firefox 135 impersonation with 8 threads:
+.PP
+.RS
+.EX
+wayback \-\-url example.com \-\-mime image/png \e
+        \-\-browser firefox135 \-\-threads 8 \e
+        \-\-output\-dir ./images
+.EE
+.RE
+.PP
+Resume an interrupted session and retry all previously failed downloads:
+.PP
+.RS
+.EX
+wayback \-\-url example.com \-\-mime text/css \e
+        \-\-resume \-\-retry\-errors all
+.EE
+.RE
+.PP
+Use a full CDX API URL directly:
+.PP
+.RS
+.EX
+wayback \-\-url "http://web.archive.org/cdx/search/cdx?url=example.com/*&filter=mimetype:image/png&collapse=urlkey&output=json" \e
+        \-\-mime image/png
+.EE
+.RE
+.SH FILES
+.TP
+.I <output\-dir>/download_journal.json
+Session journal recording the status (Pending, Success, Failed) of every
+discovered asset.
+Written atomically via a temporary file to prevent corruption.
+.SH ENVIRONMENT
+.B wayback
+does not read any environment variables directly, but it relies on
+.B libcurl-impersonate
+being available in the dynamic linker search path (see
+.IR LD_LIBRARY_PATH " or " /etc/ld.so.conf ).
+.SH PREREQUISITES
+.B wayback
+requires
+.B libcurl-impersonate
+at runtime to perform browser-impersonated TLS handshakes.
+This library is not packaged via APT; install it manually:
+.PP
+.RS
+.EX
+git clone https://github.com/lwthiker/curl-impersonate
+cd curl-impersonate
+make install
+sudo ldconfig
+.EE
+.RE
+.PP
+Full installation instructions are available in the project README at
+.UR https://github.com/ajsb85/wayback\-impersonator
+.UE .
+.SH EXIT STATUS
+.TP
+.B 0
+Successful completion.
+.TP
+.B 1
+An error occurred (bad argument, CDX query failure, runtime error).
+.TP
+.B 2
+Invalid command-line arguments (printed by clap).
+.SH BUGS
+Please report bugs and feature requests at:
+.UR https://github.com/ajsb85/wayback\-impersonator/issues
+.UE
+.SH AUTHOR
+Alexander Salas Bastidas
+.MT ajsb85@firechip.dev
+.ME
+.SH COPYRIGHT
+Copyright \(co 2026 Alexander Salas Bastidas.
+Released under the MIT License.
+.SH SEE ALSO
+.BR curl (1),
+.BR wget (1),
+.BR apt (8),
+.BR ldconfig (8)

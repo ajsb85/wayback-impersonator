@@ -1,8 +1,15 @@
 [package]
 name = "wayback-impersonator"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["Alexander Salas Bastidas <ajsb85@firechip.dev>"]
 edition = "2024"
+description = "A concurrent, browser-impersonating scraper in Rust to download archived assets from the Internet Archive's Wayback Machine CDX API without being blocked."
+homepage = "https://ajsb85.github.io/wayback-impersonator/"
+repository = "https://github.com/ajsb85/wayback-impersonator"
+license = "MIT"
+keywords = ["wayback", "internet-archive", "scraper", "curl-impersonate", "browser"]
+categories = ["command-line-utilities", "web-programming::http-client"]
+readme = "README.md"
 
 [dependencies]
 impersonate-rs = "0.1.0"
@@ -17,6 +24,27 @@ brotli = "6.0"
 [package.metadata.deb]
 name = "wayback"
 maintainer = "Alexander Salas Bastidas <ajsb85@firechip.dev>"
+copyright = "2026 Alexander Salas Bastidas <ajsb85@firechip.dev>"
+license-file = ["LICENSE", "4"]
+extended-description = """\
+wayback is a concurrent, browser-impersonating scraper written in Rust that \
+downloads archived assets from the Internet Archive's Wayback Machine CDX API \
+without being blocked. It uses libcurl-impersonate to mimic real browser TLS \
+fingerprints and HTTP headers, allowing it to bypass bot-detection mechanisms."""
+depends = ""
+section = "net"
+priority = "optional"
 assets = [
+    # Main binary
     ["target/release/wayback-impersonator", "/usr/bin/wayback", "755"],
+    # Man page (gzip-compressed as required by Debian policy §12.1)
+    ["debian/wayback.1.gz", "/usr/share/man/man1/wayback.1.gz", "644"],
+    # Machine-readable copyright (Debian policy §12.5)
+    ["debian/copyright", "/usr/share/doc/wayback/copyright", "644"],
+    # Debian changelog (gzip-compressed, Debian policy §12.7)
+    ["debian/changelog.gz", "/usr/share/doc/wayback/changelog.gz", "644"],
+    # Shell completions
+    ["debian/wayback.bash-completion", "/usr/share/bash-completion/completions/wayback", "644"],
+    ["debian/wayback.zsh", "/usr/share/zsh/vendor-completions/_wayback", "644"],
+    ["debian/wayback.fish", "/usr/share/fish/vendor_completions.d/wayback.fish", "644"],
 ]

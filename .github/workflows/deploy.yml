@@ -33,6 +33,11 @@ jobs:
           sudo mv libcurl-impersonate-ff.so* /usr/local/lib/
           sudo ldconfig
 
+      - name: Compress man page and changelog (Debian policy §12.1 / §12.7)
+        run: |
+          gzip -9 --keep debian/wayback.1
+          gzip -9 --keep debian/changelog
+
       - name: Build DEB package
         run: |
           cargo build --release

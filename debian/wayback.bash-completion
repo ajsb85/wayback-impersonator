@@ -1,0 +1,60 @@
+# bash completion for wayback(1)
+# Installed to: /usr/share/bash-completion/completions/wayback
+# SPDX-License-Identifier: MIT
+
+_wayback() {
+    local cur prev words cword
+    _init_completion || return
+
+    local -r BROWSERS="chrome firefox edge safari tor \
+        chrome99 chrome100 chrome101 chrome104 chrome107 chrome110 \
+        chrome116 chrome119 chrome120 chrome123 chrome124 chrome127 \
+        chrome128 chrome129 chrome130 chrome131 \
+        firefox99 firefox102 firefox105 firefox109 firefox117 \
+        firefox120 firefox123 firefox124 firefox125 firefox126 \
+        firefox127 firefox128 firefox129 firefox130 firefox131 \
+        firefox132 firefox133 firefox134 firefox135 \
+        edge99 edge101 safari15_3 safari15_5 safari17_0 safari17_2_1 \
+        safari18 tor"
+
+    local -r MIMES="application/wasm application/javascript application/json \
+        text/css text/html text/javascript image/png image/jpeg image/gif \
+        image/svg+xml image/webp font/woff font/woff2 application/font-woff \
+        application/octet-stream"
+
+    local -r OPTS="-u --url -m --mime -o --output-dir -b --browser \
+        -r --resume --retry-errors -t --threads --max-retries \
+        -v --verbose -V --version -h --help"
+
+    case "$prev" in
+        -u|--url)
+            # no completion for URL
+            return
+            ;;
+        -m|--mime)
+            COMPREPLY=( $(compgen -W "$MIMES" -- "$cur") )
+            return
+            ;;
+        -o|--output-dir)
+            _filedir -d
+            return
+            ;;
+        -b|--browser)
+            COMPREPLY=( $(compgen -W "$BROWSERS" -- "$cur") )
+            return
+            ;;
+        -t|--threads|--max-retries)
+            COMPREPLY=( $(compgen -W "1 2 4 8 16 32" -- "$cur") )
+            return
+            ;;
+        --retry-errors)
+            COMPREPLY=( $(compgen -W "all HTTP timeout ssl" -- "$cur") )
+            return
+            ;;
+    esac
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W "$OPTS" -- "$cur") )
+        return
+    fi
+} && complete -F _wayback wayback
